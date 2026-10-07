@@ -10,31 +10,53 @@ const comidas = [
 ];
 
 const provincias = [
-    'Buenos Aires', 'Córdoba', 'Santa Fe', 'Mendoza',
-    'La Pampa', 'Tucumán', 'Salta', 'Neuquén',
-    'Chubut', 'Río Negro', 'San Juan', 'Entre Ríos',
-    'Corrientes', 'Misiones', 'Catamarca', 'Santiago del Estero',
-    'Jujuy', 'Formosa', 'La Rioja', 'San Luis'
+    'Salta',
+    'Santa Fe',
+    'San Luis',
+    'Mendoza',
+    'Entre Ríos',
+    'Córdoba',
+    'Chubut',
+    'Misiones'
 ];
 
-function shuffle(array) {
-    const arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-}
+const personalizaciones = {
+    Milanesa: ['Con limón', 'A la napolitana', 'Con papas'],
+    Hamburguesa: ['Con queso', 'Simple', 'Doble'],
+    Asado: ['Con cuero', 'Sin grasa', 'Con chimichurri'],
+    Empanadas: ['De carne', 'De queso', 'Verdura'],
+    Locro: ['Tradicional', 'Picante', 'Con chorizo'],
+    Chorizo: ['A la parrilla', 'Casero', 'Ahumado'],
+    Humita: ['Salada', 'Dulce', 'En chala'],
+    Matambre: ['Asado', 'Enrollado', 'Frío']
+};
 
-const provinciasMezcladas = shuffle(provincias).slice(0, comidas.length);
 const grid = document.getElementById('foodGrid');
 
-comidas.forEach((comida, idx) => {
+comidas.forEach((comida, index) => {
     const box = document.createElement('div');
     box.className = 'food-box';
-    box.innerHTML = `
-        <div class="food-name">${comida}</div>
-        <div class="province">${provinciasMezcladas[idx]}</div>
-    `;
+
+    const nombre = document.createElement('div');
+    nombre.className = 'food-name';
+    nombre.textContent = comida;
+
+    const provincia = document.createElement('div');
+    provincia.className = 'province';
+    provincia.textContent = provincias[index];
+
+    const customDiv = document.createElement('div');
+    customDiv.className = 'customization';
+
+    personalizaciones[comida].forEach((opcion) => {
+        const item = document.createElement('div');
+        item.className = 'custom-item';
+        item.textContent = opcion;
+        customDiv.appendChild(item);
+    });
+
+    box.appendChild(nombre);
+    box.appendChild(provincia);
+    box.appendChild(customDiv);
     grid.appendChild(box);
 });
