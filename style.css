@@ -5,55 +5,54 @@
 }
 
 body {
-    background-color: #e8ddd5;
+    background-color: #dfe0d9;
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
+    padding: 22px;
 }
 
 .container {
-    max-width: 1400px;
+    max-width: 1200px;
     width: 100%;
 }
 
 .food-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    gap: 22px;
+    justify-content: center;
 }
 
 .food-box {
-    border: 3px solid #a93f00;
+    background: #f3f2ef;
+    border: 3px solid #b0480d;
     border-radius: 18px;
-    padding: 25px;
-    background: white;
-    text-align: center;
+    min-height: 340px;
+    padding: 22px 18px 18px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
     align-items: center;
-    min-height: 320px;
-    box-shadow: 0 8px 20px rgba(169, 63, 0, 0.12);
+    justify-content: flex-start;
 }
 
 .food-name {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #3d1f0d;
-    margin-bottom: 15px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f1d1c;
+    margin-bottom: 18px;
 }
 
 .province {
-    font-size: 1em;
-    background: #f7d2a7;
-    color: #5a2e0f;
-    padding: 10px 16px;
-    border-radius: 20px;
-    font-weight: 600;
-    margin-bottom: 20px;
+    background: #e8cba7;
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #3d2a20;
+    margin-bottom: 18px;
 }
 
 .customization {
@@ -65,29 +64,23 @@ body {
 }
 
 .custom-item {
-    border: 2px solid #a93f00;
+    background: #f8f4ef;
+    border: 2px solid #b0480d;
     border-radius: 10px;
-    padding: 12px 10px;
-    background: #fff9f5;
-    font-size: 0.95em;
+    padding: 10px 8px;
+    text-align: center;
+    font-size: 0.96rem;
     font-weight: 600;
-    color: #3d1f0d;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.custom-item:hover {
-    background: #f7d2a7;
-    transform: scale(1.02);
+    color: #1f1d1c;
 }
 
 @media (max-width: 1024px) {
     .food-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
     .food-grid {
         grid-template-columns: 1fr;
     }
