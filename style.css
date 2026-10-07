@@ -24,6 +24,7 @@ body {
     grid-template-columns: repeat(4, minmax(220px, 1fr));
     gap: 22px;
     justify-content: center;
+    margin-bottom: 40px;
 }
 
 .food-box {
@@ -74,6 +75,50 @@ body {
     color: #1f1d1c;
 }
 
+.add-section {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+.food-input {
+    padding: 12px 16px;
+    border: 3px solid #b0480d;
+    border-radius: 10px;
+    font-size: 1rem;
+    width: 280px;
+    background: #f3f2ef;
+    color: #1f1d1c;
+    font-weight: 600;
+}
+
+.food-input::placeholder {
+    color: #9b8a7b;
+}
+
+.food-input:focus {
+    outline: none;
+    background: #fffdfb;
+}
+
+.add-btn {
+    padding: 12px 28px;
+    border: 3px solid #b0480d;
+    border-radius: 10px;
+    background: #b0480d;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.add-btn:hover {
+    background: #8b3608;
+    transform: scale(1.05);
+}
+
 @media (max-width: 1024px) {
     .food-grid {
         grid-template-columns: repeat(2, minmax(220px, 1fr));
@@ -83,5 +128,13 @@ body {
 @media (max-width: 520px) {
     .food-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .add-section {
+        flex-direction: column;
+    }
+    
+    .food-input {
+        width: 100%;
     }
 }

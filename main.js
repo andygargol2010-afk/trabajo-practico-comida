@@ -32,31 +32,64 @@ const personalizaciones = {
 };
 
 const grid = document.getElementById('foodGrid');
+const input = document.getElementById('newFoodInput');
+const btn = document.getElementById('addBtn');
 
-comidas.forEach((comida, index) => {
+function crearTarjeta(nombre, provincia) {
     const box = document.createElement('div');
     box.className = 'food-box';
 
-    const nombre = document.createElement('div');
-    nombre.className = 'food-name';
-    nombre.textContent = comida;
+    const nombreEl = document.createElement('div');
+    nombreEl.className = 'food-name';
+    nombreEl.textContent = nombre;
 
-    const provincia = document.createElement('div');
-    provincia.className = 'province';
-    provincia.textContent = provincias[index];
+    const provinciaEl = document.createElement('div');
+    provinciaEl.className = 'province';
+    provinciaEl.textContent = provincia;
 
     const customDiv = document.createElement('div');
     customDiv.className = 'customization';
 
-    personalizaciones[comida].forEach((opcion) => {
-        const item = document.createElement('div');
-        item.className = 'custom-item';
-        item.textContent = opcion;
-        customDiv.appendChild(item);
-    });
+    if (personalizaciones[nombre]) {
+        personalizaciones[nombre].forEach((opcion) => {
+            const item = document.createElement('div');
+            item.className = 'custom-item';
+            item.textContent = opcion;
+            customDiv.appendChild(item);
+        });
+    }
 
-    box.appendChild(nombre);
-    box.appendChild(provincia);
+    box.appendChild(nombreEl);
+    box.appendChild(provinciaEl);
     box.appendChild(customDiv);
     grid.appendChild(box);
+}
+
+comidas.forEach((comida, index) => {
+    crearTarjeta(comida, provincias[index]);
+});
+
+btn.addEventListener('click', () => {
+    const nuevoNombre = input.value.trim();
+    
+    if (nuevoNombre.length > 0) {
+        const provinciasDisponibles = provincias.filter(p => {
+            return !Array.from(grid.children).some(box => {
+                const prov = box.querySelector('.province');
+                return prov && prov.textContent === p;
+            });
+        });
+        
+        const provinciaAleatoria = provinciasDisponibles[Math.floor(Math.random() * provinciasDisponibles.length)] || 'Buenos Aires';
+        
+        crearTarjeta(nuevoNombre, provinciaAleatoria);
+        input.value = '';
+        input.focus();
+    }
+});
+
+input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        btn.click();
+    }
 });
