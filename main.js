@@ -20,6 +20,18 @@ const provincias = [
     'Misiones'
 ];
 
+// Categorías reales: crear el mapa comida -> categoría
+const tiposPorComida = {
+    Milanesa: 'Carne',
+    Hamburguesa: 'Carne',
+    Asado: 'Carne',
+    Empanadas: 'Masa',
+    Locro: 'Guiso',
+    Chorizo: 'Carne',
+    Humita: 'Masa',
+    Matambre: 'Carne'
+};
+
 const personalizaciones = {
     Milanesa: ['Papas fritas', 'Ensalada mixta', 'Salsa tártara', 'Limón', 'Mayonesa'],
     Hamburguesa: ['Papas fritas', 'Queso cheddar', 'Salsa BBQ', 'Cebolla caramelizada', 'Mayonesa', 'Ketchup'],
@@ -31,19 +43,24 @@ const personalizaciones = {
     Matambre: ['Ensalada mixta', 'Papas', 'Chimichurri', 'Mostaza', 'Aceite y vinagre']
 };
 
+// dataset unificado incluyendo tipo
 const foodData = comidas.map((nombre, index) => ({
     nombre,
     provincia: provincias[index],
+    tipo: tiposPorComida[nombre] || 'Otras',
     personalizaciones: personalizaciones[nombre] || []
 }));
 
 const grid = document.getElementById('foodGrid');
 const searchInput = document.getElementById('searchInput');
+const typeSelect = document.getElementById('typeSelect');
 const provinceSelect = document.getElementById('provinceSelect');
 const input = document.getElementById('newFoodInput');
 const btn = document.getElementById('addBtn');
 
 function populateProvinceFilter() {
+    // vaciar antes
+    provinceSelect.innerHTML = '<option value="">Todas las provincias</option>';
     const provinciasUnicas = [...new Set(foodData.map((item) => item.provincia))];
 
     provinciasUnicas.forEach((provincia) => {
@@ -54,13 +71,30 @@ function populateProvinceFilter() {
     });
 }
 
-function crearTarjeta(nombre, provincia, opciones = []) {
+function populateTypeFilter() {
+    // vaciar antes
+    typeSelect.innerHTML = '<option value="">Todas las categorías</option>';
+    const tiposUnicos = [...new Set(foodData.map((item) => item.tipo))];
+
+    tiposUnicos.forEach((tipo) => {
+        const option = document.createElement('option');
+        option.value = tipo;
+        option.textContent = tipo;
+        typeSelect.appendChild(option);
+    });
+}
+
+function crearTarjeta(nombre, provincia, tipo, opciones = []) {
     const box = document.createElement('div');
     box.className = 'food-box';
 
     const nombreEl = document.createElement('div');
     nombreEl.className = 'food-name';
     nombreEl.textContent = nombre;
+
+    const tipoEl = document.createElement('div');
+    tipoEl.className = 'tipo';
+    tipoEl.textContent = tipo;
 
     const provinciaEl = document.createElement('div');
     provinciaEl.className = 'province';
@@ -69,14 +103,10 @@ function crearTarjeta(nombre, provincia, opciones = []) {
     const customDiv = document.createElement('div');
     customDiv.className = 'customization';
 
-    // Ensure we show only 5 or 6 options. If the source has more, slice; if fewer, show what's available.
+    // Mostrar entre 5 y 6 opciones: cortar a 6 y rellenar hasta 5 si hiciera falta
     const items = opciones.slice(0, 6);
-
-    // If there are less than 5, try to pad with generic condimentos until 5 (rare case)
     const genericCondiments = ['Salsa', 'Pan', 'Ensalada', 'Papas fritas', 'Limón'];
-    while (items.length > 0 && items.length < 5) {
-        items.push(genericCondiments[items.length % genericCondiments.length]);
-    }
+    while (items.length < 5) items.push(genericCondiments[items.length % genericCondiments.length]);
 
     items.forEach((opcion) => {
         const item = document.createElement('div');
@@ -86,6 +116,7 @@ function crearTarjeta(nombre, provincia, opciones = []) {
     });
 
     box.appendChild(nombreEl);
+    box.appendChild(tipoEl);
     box.appendChild(provinciaEl);
     box.appendChild(customDiv);
     grid.appendChild(box);
@@ -93,56 +124,58 @@ function crearTarjeta(nombre, provincia, opciones = []) {
 
 function renderFoodCards() {
     const query = searchInput.value.trim().toLowerCase();
-    const provinciaSeleccionada = provinceSelect.value;
+    const tipoSeleccionado = typeSelect ? typeSelect.value : '';
+    const provinciaSeleccionada = provinceSelect ? provinceSelect.value : '';
 
     grid.innerHTML = '';
 
-    const comidaFiltrada = foodData.filter(({ nombre, provincia }) => {
+    const comidaFiltrada = foodData.filter(({ nombre, tipo, provincia }) => {
         const coincideBusqueda = nombre.toLowerCase().includes(query);
+        const coincideTipo = !tipoSeleccionado || tipo === tipoSeleccionado;
         const coincideProvincia = !provinciaSeleccionada || provincia === provinciaSeleccionada;
-        return coincideBusqueda && coincideProvincia;
+        return coincideBusqueda && coincideTipo && coincideProvincia;
     });
 
-    comidaFiltrada.forEach(({ nombre, provincia, personalizaciones: opciones }) => {
-        crearTarjeta(nombre, provincia, opciones);
+    comidaFiltrada.forEach(({ nombre, provincia, tipo, personalizaciones: opciones }) => {
+        crearTarjeta(nombre, provincia, tipo, opciones);
     });
 }
 
+// Inicializar selects y grilla
+populateTypeFilter();
 populateProvinceFilter();
 renderFoodCards();
 
 searchInput.addEventListener('input', renderFoodCards);
+if (typeSelect) typeSelect.addEventListener('change', renderFoodCards);
 provinceSelect.addEventListener('change', renderFoodCards);
 
 btn.addEventListener('click', () => {
     const nuevoNombre = input.value.trim();
+    if (!nuevoNombre) return;
 
-    if (nuevoNombre.length > 0) {
-        const provinciasDisponibles = provincias.filter((provincia) => {
-            return !foodData.some((comida) => comida.provincia === provincia && comida.nombre === nuevoNombre);
-        });
+    const provinciaAleatoria = provincias[Math.floor(Math.random() * provincias.length)] || 'Buenos Aires';
+    const tipoDefecto = 'Otras';
+    const nuevasPersonalizaciones = ['Papas fritas', 'Ensalada', 'Salsa', 'Pan', 'Limón'];
 
-        const provinciaAleatoria = provinciasDisponibles[Math.floor(Math.random() * provinciasDisponibles.length)] || 'Buenos Aires';
+    const nueva = {
+        nombre: nuevoNombre,
+        provincia: provinciaAleatoria,
+        tipo: tipoDefecto,
+        personalizaciones: nuevasPersonalizaciones
+    };
 
-        // Default new personalizations are common condimentos/acompañamientos
-        const nuevasPersonalizaciones = ['Papas fritas', 'Ensalada', 'Salsa', 'Pan', 'Limón'];
+    foodData.push(nueva);
 
-        foodData.push({
-            nombre: nuevoNombre,
-            provincia: provinciaAleatoria,
-            personalizaciones: nuevasPersonalizaciones
-        });
+    // actualizar selects
+    populateProvinceFilter();
+    populateTypeFilter();
 
-        personalizaciones[nuevoNombre] = nuevasPersonalizaciones;
-
-        input.value = '';
-        input.focus();
-        renderFoodCards();
-    }
+    input.value = '';
+    input.focus();
+    renderFoodCards();
 });
 
 input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        btn.click();
-    }
+    if (e.key === 'Enter') btn.click();
 });
